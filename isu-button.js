@@ -77,7 +77,7 @@ class IsuButton extends mixinBehaviors([PaperButtonBehavior, BaseBehavior], Poly
     return html`
     <style include="isu-elements-shared-styles">
       :host {
-        display: inline-block;
+        display: inline-flex;
         font-family: var(--isu-ui-font-family) sans-serif;
         font-size: var(--isu-ui-font-size);
         border-radius: 4px;

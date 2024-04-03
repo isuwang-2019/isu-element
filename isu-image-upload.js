@@ -343,6 +343,10 @@ class IsuImageUpload extends mixinBehaviors([BaseBehavior, TipBehavior, AjaxBeha
       },
       _isOpened: {
         type: Boolean
+      },
+      data: {
+        type: Object,
+        notify: true
       }
     }
   }
@@ -457,7 +461,7 @@ class IsuImageUpload extends mixinBehaviors([BaseBehavior, TipBehavior, AjaxBeha
       const formData = new FormData()
       formData.append(this.uploadFileName, blob)
       const data = await this.post({ url: this.uploadImgUrl, data: formData, handleAs: this.handleAs })
-      this.uploadCallback && this.isFunction(this.uploadCallback) && this.uploadCallback.call(this.domHost, data, this.uploadFileName)
+      this.uploadCallback && this.isFunction(this.uploadCallback) && this.uploadCallback.call(this.domHost, data, this, this.uploadFileName)
     }
   }
 
@@ -563,11 +567,11 @@ class IsuImageUpload extends mixinBehaviors([BaseBehavior, TipBehavior, AjaxBeha
       case 'Escape':
         this.closeViewZoom()
         break
-      // UP_ARROW
+        // UP_ARROW
       case 'ArrowUp':
         this._handleActions('zoomIn')
         break
-      // DOWN_ARROW
+        // DOWN_ARROW
       case 'ArrowDown':
         this._handleActions('zoomOut')
       }
