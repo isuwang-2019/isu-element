@@ -314,6 +314,9 @@ class IsuImageUpload extends mixinBehaviors([BaseBehavior, TipBehavior, AjaxBeha
       uploadCallback: {
         type: Function
       },
+      cancelCallback: {
+        type: Function
+      },
       /**
        * Parse the format of the return data when the uploadImgUrl is not empty, eg: text|json|blob|formData|arrayBuffer
        * */
@@ -472,6 +475,7 @@ class IsuImageUpload extends mixinBehaviors([BaseBehavior, TipBehavior, AjaxBeha
     this.src = null
     this.value = null
     this.$['file-chooser'].value = ''
+    this.cancelCallback && this.isFunction(this.cancelCallback) && this.cancelCallback.call(this.domHost, data, this, this.uploadFileName)
   }
 
   /**
