@@ -464,7 +464,7 @@ class IsuImageUpload extends mixinBehaviors([BaseBehavior, TipBehavior, AjaxBeha
       const formData = new FormData()
       formData.append(this.uploadFileName, blob)
       const data = await this.post({ url: this.uploadImgUrl, data: formData, handleAs: this.handleAs })
-      this.uploadCallback && this.isFunction(this.uploadCallback) && this.uploadCallback.call(this.domHost, data, this, this.uploadFileName)
+      this.uploadCallback && this.isFunction(this.uploadCallback) && this.uploadCallback.call(this.domHost, data, this.uploadFileName, this)
     }
   }
 
@@ -475,7 +475,7 @@ class IsuImageUpload extends mixinBehaviors([BaseBehavior, TipBehavior, AjaxBeha
     this.src = null
     this.value = null
     this.$['file-chooser'].value = ''
-    this.cancelCallback && this.isFunction(this.cancelCallback) && this.cancelCallback.call(this.domHost, data, this.uploadFileName, this)
+    this.cancelCallback && this.isFunction(this.cancelCallback) && this.cancelCallback.call(this.domHost, data, this, this.uploadFileName)
   }
 
   /**
