@@ -475,7 +475,7 @@ class IsuImageUpload extends mixinBehaviors([BaseBehavior, TipBehavior, AjaxBeha
     this.src = null
     this.value = null
     this.$['file-chooser'].value = ''
-    this.cancelCallback && this.isFunction(this.cancelCallback) && this.cancelCallback.call(this.domHost, data, this, this.uploadFileName)
+    this.cancelCallback && this.isFunction(this.cancelCallback) && this.cancelCallback.call(this.domHost, data, this.uploadFileName, this)
   }
 
   /**
