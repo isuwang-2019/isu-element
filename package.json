@@ -29,6 +29,9 @@
     "0762xiazi <909338280@qq.com>",
     "wuliya1994 <18702883708@163.com>"
   ],
+  "publishConfig": {
+    "registry": "https://registry.npmjs.org/"
+  },
   "license": "MIT",
   "scripts": {
     "start": "polymer serve --hostname 0.0.0.0",
