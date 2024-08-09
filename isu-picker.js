@@ -779,7 +779,7 @@ class IsuPicker extends mixinBehaviors([BaseBehavior, TipBehavior], PolymerEleme
 
   async _queryByKeywordUrlChanged (queryByKeywordUrl) {
     if (!queryByKeywordUrl) return
-    this.debounce('__debounceFetchByKeyword', this.fetchByKeyword, 250)
+    // this.debounceFetchByKeyword()
   }
 
   async _getSelectedForItems (itemsArr) {
@@ -789,7 +789,7 @@ class IsuPicker extends mixinBehaviors([BaseBehavior, TipBehavior], PolymerEleme
       // 判断是否有交集
       const flag = items.filter(d => selectedValues.find(i => `${i[this.attrForValue]}` === `${d[this.attrForValue]}`)).length > 0
       const addItems = items.filter(d => !selectedValues.find(i => `${i[this.attrForValue]}` === `${d[this.attrForValue]}`))
-      this.items = flag ? selectedValues.concat(addItems) : items
+      this.items = flag || items.length === 0 ? selectedValues.concat(addItems) : items
       return selectedValues
     } catch (e) {
       console.error(e)
@@ -813,7 +813,11 @@ class IsuPicker extends mixinBehaviors([BaseBehavior, TipBehavior], PolymerEleme
     if (this._userInputKeyword.length > 0) {
       this.displayCollapse(true)
     }
-    this.debounce('__debounceFetchByKeyword', this.fetchByKeyword, 250)
+    this.debounceFetchByKeyword()
+  }
+
+  debounceFetchByKeyword() {
+    this.debounce('__debounceFetchByKeyword', this.fetchByKeyword, 200)
   }
 
   /**
@@ -884,22 +888,21 @@ class IsuPicker extends mixinBehaviors([BaseBehavior, TipBehavior], PolymerEleme
   async _valueChanged (value) {
     const { attrForValue } = this
     // 本地模式，或远程数据已经就位
-    if (this.items && Array.isArray(this.items)) {
-      const flatValues = [...(new Set(String(value).split(',')))]
-      const selectedValues = this.selectedValues || []
-      const dirty = selectedValues.map(selected => selected[attrForValue]).join(',')
-      if (dirty !== value) {
-        // 判断是否有交集
-        const addSelectedItemTemp = selectedValues.filter(selectedItem => !this.items.find(item => `${item[attrForValue]}` === `${selectedItem[attrForValue]}`))
-        const itemsTemp = Array.from(new Set([...addSelectedItemTemp, ...this.items]))
-        const selectedValuesTemp = flatValues.map(val => itemsTemp.find(item => `${item[attrForValue]}` === `${val}`))
+    let itemsTemp = Array.isArray(this.items) ? this.items : []
+    const flatValues = [...(new Set(String(value).split(',').filter(item => !!item)))]
+    const selectedValues = this.selectedValues || []
+    const dirty = selectedValues.map(selected => selected[attrForValue]).join(',')
+    if (dirty !== value) {
+      // 判断是否有交集
+      const addSelectedItemTemp = selectedValues.filter(selectedItem => !itemsTemp.find(item => `${item[attrForValue]}` === `${selectedItem[attrForValue]}`))
+      itemsTemp = Array.from(new Set([...addSelectedItemTemp, ...itemsTemp]))
+      const selectedValuesTemp = flatValues.map(val => itemsTemp.find(item => `${item[attrForValue]}` === `${val}`))
           .filter(selected => !!selected)
-        if (selectedValuesTemp.length !== flatValues.length) {
-          const newSelectedValues = await this._getSelectedForItems([...itemsTemp])
-          this.selectedValues = newSelectedValues
-        } else {
-          this.selectedValues = selectedValuesTemp
-        }
+      if (selectedValuesTemp.length !== flatValues.length) {
+        const newSelectedValues = await this._getSelectedForItems([...itemsTemp])
+        this.selectedValues = newSelectedValues
+      } else {
+        this.selectedValues = selectedValuesTemp
       }
     }
 
@@ -964,6 +967,7 @@ class IsuPicker extends mixinBehaviors([BaseBehavior, TipBehavior], PolymerEleme
 
   async __inputFocus () {
     if (this.multiLimit && this.selectedValues && this.multiLimit <= this.selectedValues.length) return
+    this.debounceFetchByKeyword()
     // await this.fetchByKeyword()
     if (this.isHighlightKeyword) {
       this.set('_userInputKeyword', this.placeholder)
